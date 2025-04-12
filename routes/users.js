@@ -8,8 +8,10 @@ const router = express.Router();
 
 
 /* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
+router.get("/",authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next)=> {
+  User.find()
+  .then(users => res.status(200).json(users))
+  .catch(err => next(err));
 });
 
 router.post("/signup", (req, res) => {
@@ -45,19 +47,14 @@ router.post("/login", passport.authenticate("local", {session: false}), (req, re
   res.json({ success: true, token: token, status: "You are successfully logged in!" });
 });
 
-router.get('/logout', (req, res, next) => {  
-  if (req.session && req.session.user) {  // Check for a specific user property
-      req.session.destroy((err) => {
-          if (err) {
-              return next(err);
-          }
-          res.clearCookie('session-id');
-          res.redirect('/');
-      });
-  } else {  
-      const err = new Error('You are not logged in!');
-      err.status = 401;
-      return next(err);
-  }  
+router.post('/logout', (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+      const token = authHeader.split(' ')[1];
+
+      res.status(200).json({ message: 'Logged out successfully.' });
+  } else {
+      res.status(400).json({ message: 'No token provided.' });
+  }
 });
 module.exports = router;

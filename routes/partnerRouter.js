@@ -15,14 +15,14 @@ partnerRouter
     })
     .catch(error => next(error));
   })
-  .post(authenticate.verifyUser,(req, res) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin,(req, res) => {
     Partner.create(req.body)
     .then(partner =>{
       res.status(200).json(partner);
     })
     .catch(error => next(error));
   })
-  .put(authenticate.verifyUser,(req, res) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin,(req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on '/partners'.");
   })
@@ -43,18 +43,18 @@ partnerRouter.route("/:partnerId")
   })
   .catch(error => next(error));
 })
-.post(authenticate.verifyUser,(req, res)=>{
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res)=>{
 res.statusCode = 403;
 res.end(`Post operation not supported on "/partners/${req.params.partnerId}."`);
 })
-.put(authenticate.verifyUser,(req, res, next)=>{
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next)=>{
 Partner.findByIdAndUpdate(req.params.partnerId, req.body, {new: true})
 .then(partner =>{
   res.status(200).json(partner);
 })
 .catch(error => next(error));
 })
-.delete(authenticate.verifyUser,(req, res, next)=>{
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next)=>{
 Partner.findByIdAndDelete(req.params.partnerId)
 .then(partner => res.status(200).json(partner))
 .catch(error => next(error));
