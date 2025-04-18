@@ -13,7 +13,14 @@ router.get("/", cors.corsWithOptions, authenticate.verifyUser, authenticate.veri
   .then(users => res.status(200).json(users))
   .catch(err => next(err));
 });
-
+router.get('/facebook/token', passport.authenticate('facebook-token',{session: false}), (req, res)=>{
+  if(req.user){
+    const token = authenticate.getToken({_id: req.user._id});
+    res.statusCode = 200;
+    res.setHeader('Contnet-Type', 'application/json');
+    res.json({success: true, token: token, status: 'You are successfully logged in!'});
+  }
+});
 router.post("/signup", cors.corsWithOptions,  (req, res) => {
   const user = new User({ username: req.body.username });
   User.register(user, req.body.password)
