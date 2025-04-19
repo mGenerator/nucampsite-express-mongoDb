@@ -3,3 +3,4 @@ sessions
 bin/server.key
 bin/server.cert
 config.js
+.env
